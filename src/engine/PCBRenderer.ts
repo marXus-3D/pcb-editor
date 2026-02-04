@@ -23,6 +23,7 @@ export class PCBRenderer {
   private dummyHelper: THREE.Object3D; // For transforming instances
   
   public onSelectionChange: ((data: any) => void) | null = null;
+  public interactionMode: 'select' | 'draw' = 'select';
   
   // Scene Objects
   private boardMesh: THREE.Mesh | null = null;
@@ -284,14 +285,41 @@ export class PCBRenderer {
     this.checkIntersection();
   }
   
+  public onBoardClick: ((point: THREE.Vector3) => void) | null = null;
+
   private onPointerDown(_event: PointerEvent) {
     // If clicking on TransformControls gizmo, ignore
     if ((this.transformControls as any).axis) return;
+
+    if (this.interactionMode === 'draw') {
+        // In Draw Mode, prioritize clicking on the board/plane
+        // We can optionally support snapping to hoveredObject here later.
+        // For now, passthrough to onBoardClick.
+        if (this.onBoardClick) {
+            const planeY = this.boardConfig ? this.boardConfig.thickness / 2 : 0;
+            const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -planeY);
+            const target = new THREE.Vector3();
+            // We use the raycaster set in onPointerMove (or set it here to be safe)
+            this.raycaster.setFromCamera(this.mouse, this.camera); 
+            this.raycaster.ray.intersectPlane(plane, target);
+            if (target) {
+                this.onBoardClick(target);
+            }
+        }
+        return; 
+    }
 
     if (this.hoveredObject) {
       this.selectObject(this.hoveredObject);
     } else {
       this.deselect();
+      
+      // Raycast against board plane for drawing or deselection
+      /*
+      if (this.onBoardClick) {
+          // ... logic moved to draw mode block
+      }
+      */
     }
   }
 

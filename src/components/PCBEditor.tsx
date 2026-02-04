@@ -118,6 +118,10 @@ export const PCBEditor: React.FC = () => {
   const [selectedData, setSelectedData] = React.useState<any>(null);
   const [boardConfig, setBoardConfig] = React.useState<BoardConfig>(INITIAL_BOARD);
   const [components, setComponents] = React.useState<PCBComponent[]>(INITIAL_COMPONENTS);
+  
+  // Interaction State
+  const [tool, setTool] = React.useState<'select' | 'trace_draw'>('select');
+  const [pendingTraceId, setPendingTraceId] = React.useState<string | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -126,6 +130,16 @@ export const PCBEditor: React.FC = () => {
     rendererRef.current = renderer;
     
     renderer.onSelectionChange = (data) => setSelectedData(data);
+    
+    renderer.onBoardClick = (point) => {
+        // Use a ref for current tool state if closure is stale, 
+        // OR rely on state update function if we can.
+        // But onBoardClick is bound once. 
+        // We need to use a mutable ref for the mode or update the callback when mode changes.
+        // Since useEffect runs once, 'tool' inside here is always initial 'select'.
+        // We need to update the binding.
+    };
+    
     renderer.initBoard(boardConfig);
     renderer.updateComponents(components);
 
@@ -134,6 +148,47 @@ export const PCBEditor: React.FC = () => {
       rendererRef.current = null;
     };
   }, []);
+
+  // Sync callbacks with latest state
+  useEffect(() => {
+      if (!rendererRef.current) return;
+      
+      rendererRef.current.interactionMode = tool === 'trace_draw' ? 'draw' : 'select';
+      
+      rendererRef.current.onBoardClick = (point) => {
+          if (tool === 'trace_draw') {
+              const x = point.x;
+              const z = point.z;
+              
+              setComponents(prev => {
+                  if (pendingTraceId) {
+                      // Append point to existing trace
+                      return prev.map(c => {
+                          if (c.id === pendingTraceId && c.type === 'trace') {
+                              return { ...c, points: [...c.points, [x, z]] };
+                          }
+                          return c;
+                      });
+                  } else {
+                      // Start new trace
+                      const newId = `trace_${Date.now()}`;
+                      setPendingTraceId(newId);
+                      const newTrace: PCBComponent = {
+                          id: newId,
+                          type: 'trace',
+                          points: [[x, z]], 
+                          width: 0.5,
+                          layer: 'top'
+                      };
+                      return [...prev, newTrace];
+                  }
+              });
+          } else {
+             // In select mode, maybe deselect handled by renderer
+          }
+      };
+  }, [tool, pendingTraceId]); // Re-bind when tool or pendingTrace changes
+
 
   // Sync state with renderer
   useEffect(() => {
@@ -185,19 +240,28 @@ export const PCBEditor: React.FC = () => {
     switch(type) {
         case 'smd_rect':
             newComp = { id, type: 'smd_rect', pos: [0, 0, 0], size: [2, 1], layer: 'top' };
+            setComponents([...components, newComp]);
             break;
         case 'smd_round':
             newComp = { id, type: 'smd_round', pos: [5, 0, 0], size: [1, 1], layer: 'top' };
+            setComponents([...components, newComp]);
             break;
         case 'hole':
             newComp = { id, type: 'hole', pos: [0, 0], radius: 1 };
+            setComponents([...components, newComp]);
             break;
         case 'trace':
-            newComp = { id, type: 'trace', points: [[-5, -5], [5, 5]], width: 0.5, layer: 'top' };
+            // Enter Trace Mode
+            setTool('trace_draw');
+            setPendingTraceId(null);
             break;
         default: return;
     }
-    setComponents([...components, newComp]);
+  };
+
+  const finishTrace = () => {
+      setTool('select');
+      setPendingTraceId(null);
   };
 
   const deleteSelected = () => {
@@ -212,26 +276,21 @@ export const PCBEditor: React.FC = () => {
       }
   };
 
-  // Keyboard shortcut for delete
+  // Keyboard shortcut for delete & Esc
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Delete' || e.key === 'Backspace') {
-            deleteSelected();
-        }
+        if (e.key === 'Escape') finishTrace(); 
+        if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedData]); // Re-bind when selection changes so closure captures latest state? 
-  // Actually simpler: just use a ref or depend on deleteSelected which depends on selectedData.
-  // Warning: components state inside deleteSelected might be stale if closure issues.
-  // Better to use functional update in setComponents, which we did.
-  // But 'selectedData' needs to be current.
+  }, [selectedData]); 
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <div 
         ref={containerRef} 
-        style={{ width: '100%', height: '100%', overflow: 'hidden' }}
+        style={{ width: '100%', height: '100%', overflow: 'hidden', cursor: tool === 'trace_draw' ? 'crosshair' : 'default'  }}
       />
       
       {/* Top Bar: Tools */}
@@ -245,7 +304,12 @@ export const PCBEditor: React.FC = () => {
         <button onClick={() => addComponent('smd_rect')} style={btnStyle}>+ Rect Pad</button>
         <button onClick={() => addComponent('smd_round')} style={btnStyle}>+ Round Pad</button>
         <button onClick={() => addComponent('hole')} style={btnStyle}>+ Hole</button>
-        <button onClick={() => addComponent('trace')} style={btnStyle}>+ Trace</button>
+        <button 
+           onClick={() => tool === 'trace_draw' ? finishTrace() : addComponent('trace')} 
+           style={{ ...btnStyle, background: tool === 'trace_draw' ? '#ff8c00' : '#444' }}
+        >
+            {tool === 'trace_draw' ? 'Stop Drawing (Esc)' : '+ Draw Trace'}
+        </button>
       </div>
 
       {/* Right Panel: Board Config */}

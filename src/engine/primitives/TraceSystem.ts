@@ -31,7 +31,20 @@ export class TraceSystem {
   }
 
   private createTraceGeometry(trace: TraceComponent): THREE.BufferGeometry {
-    const points = trace.points;
+    // Filter out coincident points
+    const rawPoints = trace.points;
+    if (rawPoints.length < 2) return new THREE.BufferGeometry();
+    
+    const points: [number, number][] = [rawPoints[0]];
+    for(let i=1; i<rawPoints.length; i++) {
+        const prev = points[points.length-1];
+        const curr = rawPoints[i];
+        const distSq = (curr[0]-prev[0])**2 + (curr[1]-prev[1])**2;
+        if (distSq > 0.000001) {
+            points.push(curr);
+        }
+    }
+
     const width = trace.width;
     const halfWidth = width / 2;
 
