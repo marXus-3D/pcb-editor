@@ -200,6 +200,33 @@ export const PCBEditor: React.FC = () => {
     setComponents([...components, newComp]);
   };
 
+  const deleteSelected = () => {
+      if (!selectedData) return;
+      
+      const targetId = selectedData.id;
+
+      if (targetId) {
+          setComponents(prev => prev.filter(c => c.id !== targetId));
+          setSelectedData(null);
+          // Renderer update handles visual removal
+      }
+  };
+
+  // Keyboard shortcut for delete
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            deleteSelected();
+        }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedData]); // Re-bind when selection changes so closure captures latest state? 
+  // Actually simpler: just use a ref or depend on deleteSelected which depends on selectedData.
+  // Warning: components state inside deleteSelected might be stale if closure issues.
+  // Better to use functional update in setComponents, which we did.
+  // But 'selectedData' needs to be current.
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <div 
@@ -260,8 +287,26 @@ export const PCBEditor: React.FC = () => {
 
           <div style={{ marginTop: 20, fontSize: 12, color: '#aaa' }}>
               Components: {components.length} <br/>
-              Selected ID: {selectedData?.object?.userData?.id || 'None'}
+              Selected ID: {selectedData?.id || 'None'}
           </div>
+          
+          {selectedData && (
+              <button 
+                onClick={deleteSelected}
+                style={{ 
+                    marginTop: 10, 
+                    width: '100%', 
+                    padding: '8px 12px', 
+                    background: '#8b0000', 
+                    color: 'white', 
+                    border: '1px solid #ff4444', 
+                    borderRadius: 4, 
+                    cursor: 'pointer' 
+                }}
+              >
+                  Delete Component
+              </button>
+          )}
       </div>
     </div>
   );

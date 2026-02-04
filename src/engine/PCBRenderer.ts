@@ -382,12 +382,20 @@ export class PCBRenderer {
     
     if (this.onSelectionChange) {
       // Get Data
-      let data: any = { type: 'unknown' };
+      let data: any = { type: 'unknown', object: object, instanceId: instanceId };
       // How to get ID?
       // For InstancedMesh, we don't have ID unless mapped.
       // For Mesh (Trace), userData has ID.
       if (object.userData && object.userData.id) {
-         data = { ...object.userData };
+         data = { ...data, ...object.userData };
+      }
+      // For InstancedMesh, we might want to resolve ID here to make it easier for UI
+      if (object instanceof THREE.InstancedMesh && typeof instanceId === 'number' && object.userData.componentIds) {
+          const compId = object.userData.componentIds[instanceId];
+          const component = this.components.find(c => c.id === compId);
+          if (component) {
+              data = { ...data, ...component };
+          }
       }
       
       // Calculate Surface Area?
