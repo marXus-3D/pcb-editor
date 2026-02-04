@@ -26,6 +26,7 @@ export class PCBRenderer {
   
   // Scene Objects
   private boardMesh: THREE.Mesh | null = null;
+  private gridHelper: THREE.GridHelper | null = null;
   private group: THREE.Group;
   private boardConfig: BoardConfig | null = null;
   private components: PCBComponent[] = [];
@@ -135,7 +136,9 @@ export class PCBRenderer {
     this.boardConfig = config;
     // Dipose old board if exists
     if (this.boardMesh) {
-      this.scene.remove(this.boardMesh);
+      if (this.boardMesh.parent) {
+        this.boardMesh.parent.remove(this.boardMesh);
+      }
       if (this.boardMesh.geometry) this.boardMesh.geometry.dispose();
       if (Array.isArray(this.boardMesh.material)) {
         this.boardMesh.material.forEach((m) => m.dispose());
@@ -170,9 +173,22 @@ export class PCBRenderer {
     // Let's just place them.
 
     // Grid Helper
-    const gridHelper = new THREE.GridHelper(Math.max(config.width, config.height) * 1.5, 20);
-    gridHelper.position.y = -config.thickness / 2 - 0.1;
-    this.scene.add(gridHelper);
+    if (this.gridHelper) {
+      this.scene.remove(this.gridHelper);
+      this.gridHelper.geometry.dispose();
+      if (Array.isArray(this.gridHelper.material)) {
+        this.gridHelper.material.forEach(m => m.dispose());
+      } else {
+        (this.gridHelper.material as THREE.Material).dispose();
+      }
+    }
+
+    const gridSize = Math.max(config.width, config.height) * 2;
+    const gridDivisions = Math.round(gridSize / 10); // 10mm squares roughly
+
+    this.gridHelper = new THREE.GridHelper(gridSize, gridDivisions, 0x555555, 0x333333);
+    this.gridHelper.position.y = -config.thickness / 2 - 0.1;
+    this.scene.add(this.gridHelper);
   }
 
   private onWindowResize() {

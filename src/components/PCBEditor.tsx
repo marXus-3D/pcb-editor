@@ -116,55 +116,55 @@ export const PCBEditor: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<PCBRenderer | null>(null);
   const [selectedData, setSelectedData] = React.useState<any>(null);
+  const [boardConfig, setBoardConfig] = React.useState<BoardConfig>(INITIAL_BOARD);
+  const [components, setComponents] = React.useState<PCBComponent[]>(INITIAL_COMPONENTS);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Initialize Renderer
     const renderer = new PCBRenderer(containerRef.current);
     rendererRef.current = renderer;
     
-    // Bind Interaction Callback
-    renderer.onSelectionChange = (data) => {
-      setSelectedData(data);
-    };
+    renderer.onSelectionChange = (data) => setSelectedData(data);
+    renderer.initBoard(boardConfig);
+    renderer.updateComponents(components);
 
-    // Initialize Board
-    renderer.initBoard(INITIAL_BOARD);
-    
-    // Add Components
-    renderer.updateComponents(INITIAL_COMPONENTS);
-
-    // Cleanup
     return () => {
       renderer.dispose();
       rendererRef.current = null;
     };
   }, []);
 
+  // Sync state with renderer
+  useEffect(() => {
+     if (rendererRef.current) rendererRef.current.initBoard(boardConfig);
+  }, [boardConfig]);
+
+  useEffect(() => {
+     if (rendererRef.current) rendererRef.current.updateComponents(components);
+  }, [components]);
+
   const handleDownload = () => {
-    const data = rendererRef.current?.save();
-    if (data) {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'pcb-layout.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+    const data = { board: boardConfig, components };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pcb-layout.json';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && rendererRef.current) {
+    if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
           const json = JSON.parse(e.target?.result as string);
           if (json.board && json.components) {
-            rendererRef.current?.initBoard(json.board);
-            rendererRef.current?.updateComponents(json.components);
+            setBoardConfig(json.board);
+            setComponents(json.components);
           } else {
             alert('Invalid PCB JSON format');
           }
@@ -174,9 +174,30 @@ export const PCBEditor: React.FC = () => {
         }
       };
       reader.readAsText(file);
-      // Reset input
       event.target.value = '';
     }
+  };
+
+  const addComponent = (type: string) => {
+    const id = `new_${Date.now()}`;
+    let newComp: PCBComponent;
+    
+    switch(type) {
+        case 'smd_rect':
+            newComp = { id, type: 'smd_rect', pos: [0, 0, 0], size: [2, 1], layer: 'top' };
+            break;
+        case 'smd_round':
+            newComp = { id, type: 'smd_round', pos: [5, 0, 0], size: [1, 1], layer: 'top' };
+            break;
+        case 'hole':
+            newComp = { id, type: 'hole', pos: [0, 0], radius: 1 };
+            break;
+        case 'trace':
+            newComp = { id, type: 'trace', points: [[-5, -5], [5, 5]], width: 0.5, layer: 'top' };
+            break;
+        default: return;
+    }
+    setComponents([...components, newComp]);
   };
 
   return (
@@ -186,78 +207,82 @@ export const PCBEditor: React.FC = () => {
         style={{ width: '100%', height: '100%', overflow: 'hidden' }}
       />
       
-      {/* Toolbar */}
-      <div style={{
-          position: 'absolute',
-          top: 20,
-          left: 20,
-          display: 'flex',
-          gap: 10
-      }}>
-        <button 
-          onClick={handleDownload}
-          style={{ padding: '8px 16px', background: '#2e8b57', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
-        >
-          Save / Export JSON
-        </button>
-        <label style={{ padding: '8px 16px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: 4, cursor: 'pointer' }}>
+      {/* Top Bar: Tools */}
+      <div style={{ position: 'absolute', top: 20, left: 20, display: 'flex', gap: 10, background: 'rgba(0,0,0,0.6)', padding: 10, borderRadius: 8 }}>
+        <button onClick={handleDownload} style={btnStyle}>Save JSON</button>
+        <label style={btnStyle}>
           Load JSON
           <input type="file" accept=".json" onChange={handleUpload} style={{ display: 'none' }} />
         </label>
+        <div style={{ width: 1, background: '#666', margin: '0 5px' }} />
+        <button onClick={() => addComponent('smd_rect')} style={btnStyle}>+ Rect Pad</button>
+        <button onClick={() => addComponent('smd_round')} style={btnStyle}>+ Round Pad</button>
+        <button onClick={() => addComponent('hole')} style={btnStyle}>+ Hole</button>
+        <button onClick={() => addComponent('trace')} style={btnStyle}>+ Trace</button>
       </div>
-      
-      {/* Sidebar */}
-      {selectedData && (
-        <div style={{
-          position: 'absolute',
-          top: 20,
-          right: 20,
-          width: 250,
-          background: 'rgba(32, 32, 32, 0.9)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid #444',
-          borderRadius: 8,
-          padding: 20,
-          color: 'white',
-          fontFamily: 'monospace'
-        }}>
-          <h3>Component Data</h3>
-          <div style={{ display: 'grid', gap: 10 }}>
-            <div>
-              <strong>ID:</strong> {selectedData.id || 'N/A'}
-            </div>
-            <div>
-              <strong>Type:</strong> {selectedData.type || 'Unknown'}
-            </div>
-            {selectedData.pos && (
-              <div>
-                <strong>Position:</strong>
-                <div style={{ paddingLeft: 10 }}>
-                  X: {selectedData.pos[0]?.toFixed(2)}<br/>
-                  Y: {selectedData.pos[1]?.toFixed(2)}<br/>
-                  Z: {selectedData.pos[2]?.toFixed(2)}
-                </div>
-              </div>
-            )}
-            {/* Surface Area Calculation Mockup */}
-            {selectedData.size && (
-              <div>
-                 <strong>Area:</strong> {(selectedData.size[0] * (selectedData.size[1] || selectedData.size[0])).toFixed(2)} units²
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      
-      <div style={{
-        position: 'absolute',
-        bottom: 20,
-        left: 20,
-        color: '#888',
-        pointerEvents: 'none'
+
+      {/* Right Panel: Board Config */}
+      <div style={{ 
+          position: 'absolute', top: 20, right: 20, width: 250, 
+          background: 'rgba(30,30,30,0.9)', color: 'white', padding: 20, borderRadius: 8 
       }}>
-        Left Click to Select • Drag Gizmo to Move • Right Click to Rotate Camera
+          <h3 style={{ margin: '0 0 15px 0', borderBottom: '1px solid #555', paddingBottom: 10 }}>PCB Configuration</h3>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <label>
+                  Width (mm)
+                  <input 
+                      type="number" 
+                      value={boardConfig.width}
+                      onChange={e => setBoardConfig({...boardConfig, width: parseFloat(e.target.value)})}
+                      style={inputStyle}
+                  />
+              </label>
+              <label>
+                  Height (mm)
+                  <input 
+                      type="number" 
+                      value={boardConfig.height}
+                      onChange={e => setBoardConfig({...boardConfig, height: parseFloat(e.target.value)})}
+                      style={inputStyle}
+                  />
+              </label>
+              <label>
+                  Thickness (mm)
+                  <input 
+                      type="number" 
+                      value={boardConfig.thickness}
+                      onChange={e => setBoardConfig({...boardConfig, thickness: parseFloat(e.target.value)})}
+                      style={inputStyle}
+                  />
+              </label>
+          </div>
+
+          <div style={{ marginTop: 20, fontSize: 12, color: '#aaa' }}>
+              Components: {components.length} <br/>
+              Selected ID: {selectedData?.object?.userData?.id || 'None'}
+          </div>
       </div>
     </div>
   );
+};
+
+const btnStyle: React.CSSProperties = {
+    padding: '8px 12px',
+    background: '#444',
+    color: 'white',
+    border: '1px solid #666',
+    borderRadius: 4,
+    cursor: 'pointer',
+    fontSize: 14
+};
+
+const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: 6,
+    marginTop: 4,
+    background: '#222',
+    border: '1px solid #444',
+    color: 'white',
+    borderRadius: 4
 };
