@@ -1,0 +1,716 @@
+{
+  "board": {
+    "width": 100,
+    "height": 80,
+    "thickness": 1.6
+  },
+  "components": [
+    {
+      "id": "pad_1",
+      "type": "smd_rect",
+      "pos": [ 10, 0, 0 ],
+      "size": [ 2, 4 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_2",
+      "type": "smd_rect",
+      "pos": [ 15, 5, 90 ],
+      "size": [ 2, 4 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_3",
+      "type": "smd_rect",
+      "pos": [ -20, 10, 45 ],
+      "size": [ 1.5, 3 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "pad_4",
+      "type": "smd_rect",
+      "pos": [ -25, -10, 0 ],
+      "size": [ 2.5, 2.5 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_5",
+      "type": "smd_rect",
+      "pos": [ 30, 20, 90 ],
+      "size": [ 1, 2 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "pad_6",
+      "type": "smd_rect",
+      "pos": [ 35, 25, 0 ],
+      "size": [ 3, 1.5 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_7",
+      "type": "smd_rect",
+      "pos": [ -40, -30, 180 ],
+      "size": [ 2, 4 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_8",
+      "type": "smd_rect",
+      "pos": [ 42, -35, 90 ],
+      "size": [ 1.2, 2.4 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "pad_9",
+      "type": "smd_rect",
+      "pos": [ 5, 35, 0 ],
+      "size": [ 2, 2 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_10",
+      "type": "smd_rect",
+      "pos": [ -5, 35, 0 ],
+      "size": [ 2, 2 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_11",
+      "type": "smd_rect",
+      "pos": [ 12, -12, 45 ],
+      "size": [ 1.8, 3.2 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "pad_12",
+      "type": "smd_rect",
+      "pos": [ -12, -12, 135 ],
+      "size": [ 1.8, 3.2 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "pad_13",
+      "type": "smd_rect",
+      "pos": [ 45, 0, 90 ],
+      "size": [ 3, 6 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_14",
+      "type": "smd_rect",
+      "pos": [ -45, 0, 90 ],
+      "size": [ 3, 6 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_15",
+      "type": "smd_rect",
+      "pos": [ 0, 38, 0 ],
+      "size": [ 5, 1 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_16",
+      "type": "smd_rect",
+      "pos": [ 0, -38, 0 ],
+      "size": [ 5, 1 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "pad_17",
+      "type": "smd_rect",
+      "pos": [ 22, 15, 30 ],
+      "size": [ 1.5, 1.5 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_18",
+      "type": "smd_rect",
+      "pos": [ -22, 15, 330 ],
+      "size": [ 1.5, 1.5 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_19",
+      "type": "smd_rect",
+      "pos": [ 33, -22, 0 ],
+      "size": [ 2, 3 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "pad_20",
+      "type": "smd_rect",
+      "pos": [ -33, -22, 0 ],
+      "size": [ 2, 3 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "pad_21",
+      "type": "smd_rect",
+      "pos": [ 8, 8, 0 ],
+      "size": [ 0.8, 1.2 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_22",
+      "type": "smd_rect",
+      "pos": [ 9, 8, 0 ],
+      "size": [ 0.8, 1.2 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_23",
+      "type": "smd_rect",
+      "pos": [ 10, 8, 0 ],
+      "size": [ 0.8, 1.2 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_24",
+      "type": "smd_rect",
+      "pos": [ 11, 8, 0 ],
+      "size": [ 0.8, 1.2 ],
+      "layer": "top"
+    },
+    {
+      "id": "pad_25",
+      "type": "smd_rect",
+      "pos": [ 12, 8, 0 ],
+      "size": [ 0.8, 1.2 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_26",
+      "type": "smd_round",
+      "pos": [ -10, 0, 5 ],
+      "size": [ 1.5, 1.5 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_27",
+      "type": "smd_round",
+      "pos": [ -15, 5, 0 ],
+      "size": [ 2, 2 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_28",
+      "type": "smd_round",
+      "pos": [ 20, 10, 0 ],
+      "size": [ 1, 1 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "rnd_29",
+      "type": "smd_round",
+      "pos": [ 25, -10, 0 ],
+      "size": [ 1.8, 1.8 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_30",
+      "type": "smd_round",
+      "pos": [ -30, 20, 0 ],
+      "size": [ 1.2, 1.2 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "rnd_31",
+      "type": "smd_round",
+      "pos": [ -35, 25, 0 ],
+      "size": [ 3, 3 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_32",
+      "type": "smd_round",
+      "pos": [ 40, -30, 0 ],
+      "size": [ 1.5, 1.5 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_33",
+      "type": "smd_round",
+      "pos": [ -42, -35, 0 ],
+      "size": [ 1.5, 1.5 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "rnd_34",
+      "type": "smd_round",
+      "pos": [ -5, 30, 0 ],
+      "size": [ 1, 1 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_35",
+      "type": "smd_round",
+      "pos": [ 5, 30, 0 ],
+      "size": [ 1, 1 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_36",
+      "type": "smd_round",
+      "pos": [ -12, 12, 0 ],
+      "size": [ 2.2, 2.2 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "rnd_37",
+      "type": "smd_round",
+      "pos": [ 12, 12, 0 ],
+      "size": [ 2.2, 2.2 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "rnd_38",
+      "type": "smd_round",
+      "pos": [ 38, 0, 0 ],
+      "size": [ 4, 4 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_39",
+      "type": "smd_round",
+      "pos": [ -38, 0, 0 ],
+      "size": [ 4, 4 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_40",
+      "type": "smd_round",
+      "pos": [ 0, 32, 0 ],
+      "size": [ 1.5, 1.5 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_41",
+      "type": "smd_round",
+      "pos": [ 0, -32, 0 ],
+      "size": [ 1.5, 1.5 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "rnd_42",
+      "type": "smd_round",
+      "pos": [ 18, 18, 0 ],
+      "size": [ 1, 1 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_43",
+      "type": "smd_round",
+      "pos": [ -18, 18, 0 ],
+      "size": [ 1, 1 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_44",
+      "type": "smd_round",
+      "pos": [ 28, -28, 0 ],
+      "size": [ 2.5, 2.5 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "rnd_45",
+      "type": "smd_round",
+      "pos": [ -28, -28, 0 ],
+      "size": [ 2.5, 2.5 ],
+      "layer": "bottom"
+    },
+    {
+      "id": "rnd_46",
+      "type": "smd_round",
+      "pos": [ 8, -8, 0 ],
+      "size": [ 0.9, 0.9 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_47",
+      "type": "smd_round",
+      "pos": [ 9, -8, 0 ],
+      "size": [ 0.9, 0.9 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_48",
+      "type": "smd_round",
+      "pos": [ 10, -8, 0 ],
+      "size": [ 0.9, 0.9 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_49",
+      "type": "smd_round",
+      "pos": [ 11, -8, 0 ],
+      "size": [ 0.9, 0.9 ],
+      "layer": "top"
+    },
+    {
+      "id": "rnd_50",
+      "type": "smd_round",
+      "pos": [ 12, -8, 0 ],
+      "size": [ 0.9, 0.9 ],
+      "layer": "top"
+    },
+    {
+      "id": "hole_51",
+      "type": "hole",
+      "pos": [ 0, 0 ],
+      "radius": 0.5,
+      "layer": "top"
+    },
+    {
+      "id": "hole_52",
+      "type": "hole",
+      "pos": [ 45, 35 ],
+      "radius": 1.5,
+      "layer": "top"
+    },
+    {
+      "id": "hole_53",
+      "type": "hole",
+      "pos": [ -45, 35 ],
+      "radius": 1.5,
+      "layer": "top"
+    },
+    {
+      "id": "hole_54",
+      "type": "hole",
+      "pos": [ 45, -35 ],
+      "radius": 1.5,
+      "layer": "top"
+    },
+    {
+      "id": "hole_55",
+      "type": "hole",
+      "pos": [ -45, -35 ],
+      "radius": 1.5,
+      "layer": "top"
+    },
+    {
+      "id": "hole_56",
+      "type": "hole",
+      "pos": [ 20, 0 ],
+      "radius": 0.8,
+      "layer": "top"
+    },
+    {
+      "id": "hole_57",
+      "type": "hole",
+      "pos": [ -20, 0 ],
+      "radius": 0.8,
+      "layer": "top"
+    },
+    {
+      "id": "hole_58",
+      "type": "hole",
+      "pos": [ 0, 20 ],
+      "radius": 0.8,
+      "layer": "top"
+    },
+    {
+      "id": "hole_59",
+      "type": "hole",
+      "pos": [ 0, -20 ],
+      "radius": 0.8,
+      "layer": "top"
+    },
+    {
+      "id": "hole_60",
+      "type": "hole",
+      "pos": [ 10, 10 ],
+      "radius": 0.6,
+      "layer": "top"
+    },
+    {
+      "id": "hole_61",
+      "type": "hole",
+      "pos": [ -10, 10 ],
+      "radius": 0.6,
+      "layer": "top"
+    },
+    {
+      "id": "hole_62",
+      "type": "hole",
+      "pos": [ 10, -10 ],
+      "radius": 0.6,
+      "layer": "top"
+    },
+    {
+      "id": "hole_63",
+      "type": "hole",
+      "pos": [ -10, -10 ],
+      "radius": 0.6,
+      "layer": "top"
+    },
+    {
+      "id": "hole_64",
+      "type": "hole",
+      "pos": [ 30, 15 ],
+      "radius": 1.0,
+      "layer": "top"
+    },
+    {
+      "id": "hole_65",
+      "type": "hole",
+      "pos": [ -30, 15 ],
+      "radius": 1.0,
+      "layer": "top"
+    },
+    {
+      "id": "hole_66",
+      "type": "hole",
+      "pos": [ 30, -15 ],
+      "radius": 1.0,
+      "layer": "top"
+    },
+    {
+      "id": "hole_67",
+      "type": "hole",
+      "pos": [ -30, -15 ],
+      "radius": 1.0,
+      "layer": "top"
+    },
+    {
+      "id": "hole_68",
+      "type": "hole",
+      "pos": [ 15, 30 ],
+      "radius": 0.4,
+      "layer": "top"
+    },
+    {
+      "id": "hole_69",
+      "type": "hole",
+      "pos": [ -15, 30 ],
+      "radius": 0.4,
+      "layer": "top"
+    },
+    {
+      "id": "hole_70",
+      "type": "hole",
+      "pos": [ 15, -30 ],
+      "radius": 0.4,
+      "layer": "top"
+    },
+    {
+      "id": "hole_71",
+      "type": "hole",
+      "pos": [ -15, -30 ],
+      "radius": 0.4,
+      "layer": "top"
+    },
+    {
+      "id": "hole_72",
+      "type": "hole",
+      "pos": [ 40, 0 ],
+      "radius": 0.7,
+      "layer": "top"
+    },
+    {
+      "id": "hole_73",
+      "type": "hole",
+      "pos": [ -40, 0 ],
+      "radius": 0.7,
+      "layer": "top"
+    },
+    {
+      "id": "hole_74",
+      "type": "hole",
+      "pos": [ 0, 35 ],
+      "radius": 0.7,
+      "layer": "top"
+    },
+    {
+      "id": "hole_75",
+      "type": "hole",
+      "pos": [ 0, -35 ],
+      "radius": 0.7,
+      "layer": "top"
+    },
+    {
+      "id": "trace_76",
+      "type": "trace",
+      "points": [ [-5, -5], [5, -5], [5, 5] ],
+      "width": 0.5,
+      "layer": "top"
+    },
+    {
+      "id": "trace_77",
+      "type": "trace",
+      "points": [ [10, 0], [15, 5], [20, 5] ],
+      "width": 0.3,
+      "layer": "top"
+    },
+    {
+      "id": "trace_78",
+      "type": "trace",
+      "points": [ [-10, 0], [-15, 5], [-20, 5] ],
+      "width": 0.3,
+      "layer": "bottom"
+    },
+    {
+      "id": "trace_79",
+      "type": "trace",
+      "points": [ [30, 20], [30, 25], [35, 25] ],
+      "width": 0.25,
+      "layer": "top"
+    },
+    {
+      "id": "trace_80",
+      "type": "trace",
+      "points": [ [-30, -20], [-30, -25], [-35, -25] ],
+      "width": 0.25,
+      "layer": "bottom"
+    },
+    {
+      "id": "trace_81",
+      "type": "trace",
+      "points": [ [0, 10], [0, 15], [5, 20] ],
+      "width": 0.4,
+      "layer": "top"
+    },
+    {
+      "id": "trace_82",
+      "type": "trace",
+      "points": [ [0, -10], [0, -15], [5, -20] ],
+      "width": 0.4,
+      "layer": "bottom"
+    },
+    {
+      "id": "trace_83",
+      "type": "trace",
+      "points": [ [40, 30], [45, 30], [45, 35] ],
+      "width": 0.6,
+      "layer": "top"
+    },
+    {
+      "id": "trace_84",
+      "type": "trace",
+      "points": [ [-40, 30], [-45, 30], [-45, 35] ],
+      "width": 0.6,
+      "layer": "top"
+    },
+    {
+      "id": "trace_85",
+      "type": "trace",
+      "points": [ [25, 0], [30, 5], [35, 0] ],
+      "width": 0.2,
+      "layer": "top"
+    },
+    {
+      "id": "trace_86",
+      "type": "trace",
+      "points": [ [-25, 0], [-30, -5], [-35, 0] ],
+      "width": 0.2,
+      "layer": "bottom"
+    },
+    {
+      "id": "trace_87",
+      "type": "trace",
+      "points": [ [8, 8], [8, 12], [12, 12] ],
+      "width": 0.15,
+      "layer": "top"
+    },
+    {
+      "id": "trace_88",
+      "type": "trace",
+      "points": [ [9, 8], [9, 13], [13, 13] ],
+      "width": 0.15,
+      "layer": "top"
+    },
+    {
+      "id": "trace_89",
+      "type": "trace",
+      "points": [ [10, 8], [10, 14], [14, 14] ],
+      "width": 0.15,
+      "layer": "top"
+    },
+    {
+      "id": "trace_90",
+      "type": "trace",
+      "points": [ [11, 8], [11, 15], [15, 15] ],
+      "width": 0.15,
+      "layer": "top"
+    },
+    {
+      "id": "trace_91",
+      "type": "trace",
+      "points": [ [12, 8], [12, 16], [16, 16] ],
+      "width": 0.15,
+      "layer": "top"
+    },
+    {
+      "id": "trace_92",
+      "type": "trace",
+      "points": [ [42, -35], [40, -30], [35, -30] ],
+      "width": 0.35,
+      "layer": "bottom"
+    },
+    {
+      "id": "trace_93",
+      "type": "trace",
+      "points": [ [-40, -30], [-35, -25], [-30, -20] ],
+      "width": 0.35,
+      "layer": "top"
+    },
+    {
+      "id": "trace_94",
+      "type": "trace",
+      "points": [ [5, 35], [10, 35], [10, 30] ],
+      "width": 0.3,
+      "layer": "top"
+    },
+    {
+      "id": "trace_95",
+      "type": "trace",
+      "points": [ [-5, 35], [-10, 35], [-10, 30] ],
+      "width": 0.3,
+      "layer": "top"
+    },
+    {
+      "id": "trace_96",
+      "type": "trace",
+      "points": [ [22, 15], [25, 15], [25, 20] ],
+      "width": 0.25,
+      "layer": "top"
+    },
+    {
+      "id": "trace_97",
+      "type": "trace",
+      "points": [ [-22, 15], [-25, 15], [-25, 20] ],
+      "width": 0.25,
+      "layer": "top"
+    },
+    {
+      "id": "trace_98",
+      "type": "trace",
+      "points": [ [33, -22], [35, -22], [35, -15] ],
+      "width": 0.4,
+      "layer": "bottom"
+    },
+    {
+      "id": "trace_99",
+      "type": "trace",
+      "points": [ [-33, -22], [-35, -22], [-35, -15] ],
+      "width": 0.4,
+      "layer": "bottom"
+    },
+    {
+      "id": "trace_100",
+      "type": "trace",
+      "points": [ [0, 0], [5, 5], [10, 5] ],
+      "width": 0.5,
+      "layer": "top"
+    },
+    {
+      "id": "trace_101",
+      "type": "trace",
+      "points": [ [0, 0], [-5, -5], [-10, -5] ],
+      "width": 0.5,
+      "layer": "bottom"
+    }
+  ]
+}

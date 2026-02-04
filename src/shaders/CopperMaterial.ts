@@ -5,6 +5,9 @@ export type CopperShapeType = 'rect' | 'circle' | 'trace';
 export const CopperVertexShader = `
   varying vec2 vUv;
   varying vec3 vPosition;
+  varying vec3 vNormal; // Added
+  varying vec3 vViewPosition; // Added
+
   varying float vIsHovered;
   varying float vIsSelected;
   
@@ -17,7 +20,7 @@ export const CopperVertexShader = `
   void main() {
     vUv = uv;
     vPosition = position;
-    
+
     float instanceID = float(gl_InstanceID);
     
     // Check if this instance is hovered/selected
@@ -27,18 +30,26 @@ export const CopperVertexShader = `
     vIsHovered = (instanceHovered || (!uIsInstanced && uIsHovered)) ? 1.0 : 0.0;
     vIsSelected = (instanceSelected || (!uIsInstanced && uIsSelected)) ? 1.0 : 0.0;
 
+    // Normalize normal and transform to view space
+    vNormal = normalize(normalMatrix * normal);
+
     // For instanced meshes, use instanceMatrix. For regular meshes, just use modelViewMatrix.
     #ifdef USE_INSTANCING
-      gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+      vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
     #else
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
     #endif
+
+    vViewPosition = -mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
   }
 `;
 
 export const CopperFragmentShader = `
   varying vec2 vUv;
-  varying vec3 vPosition;
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+
   varying float vIsHovered;
   varying float vIsSelected;
   
@@ -79,11 +90,36 @@ export const CopperFragmentShader = `
 
     // Brushed metal effect
     float noise = random(vec2(vUv.x, vUv.y * 100.0));
-    vec3 baseColor = uColor * (0.8 + 0.2 * noise);
     
-    // Mix Colors
-    vec3 finalColor = baseColor;
+    // Lighting Calculation (Blinn-Phong)
+    vec3 viewDir = normalize(vViewPosition);
+    vec3 normal = normalize(vNormal);
     
+    // Fixed light direction (Top-Right-Front)
+    vec3 lightDir = normalize(vec3(0.5, 0.8, 0.5)); 
+    
+    // Ambient
+    vec3 ambient = uColor * 0.4;
+    
+    // Diffuse
+    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse = uColor * diff * 0.6;
+    
+    // Specular
+    vec3 halfDir = normalize(lightDir + viewDir);
+    float specAngle = max(dot(normal, halfDir), 0.0);
+    float shininess = 32.0;
+    vec3 specular = uColor * pow(specAngle, shininess) * 1.5; 
+    
+    // Combine lighting
+    vec3 litColor = ambient + diffuse + specular;
+
+    // Mix with Noise (Metal Texture)
+    // Apply noise mostly to diffuse/ambient, keep specular sharp? 
+    // Or just modulate total result.
+    vec3 finalColor = litColor * (0.85 + 0.15 * noise);
+    
+    // Selection/Hover Overlays
     if (vIsSelected > 0.5) {
         finalColor = mix(finalColor, uSelectedColor, 0.5);
     } else if (vIsHovered > 0.5) {
