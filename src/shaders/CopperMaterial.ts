@@ -21,14 +21,18 @@ export const CopperVertexShader = `
     float instanceID = float(gl_InstanceID);
     
     // Check if this instance is hovered/selected
-    // abs(a - b) < 0.1 is safe for float equality check of integers
     bool instanceHovered = uIsInstanced && abs(instanceID - uHoveredInstance) < 0.5;
     bool instanceSelected = uIsInstanced && abs(instanceID - uSelectedInstance) < 0.5;
     
     vIsHovered = (instanceHovered || (!uIsInstanced && uIsHovered)) ? 1.0 : 0.0;
     vIsSelected = (instanceSelected || (!uIsInstanced && uIsSelected)) ? 1.0 : 0.0;
 
-    gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+    // For instanced meshes, use instanceMatrix. For regular meshes, just use modelViewMatrix.
+    #ifdef USE_INSTANCING
+      gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+    #else
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    #endif
   }
 `;
 
@@ -122,6 +126,11 @@ export const createCopperMaterial = (shapeType: CopperShapeType, isInstanced: bo
       uEdgeWidth: { value: 0.05 }, // UV space width
       uShapeType: { value: typeInt }
     },
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide,
+    // Use polygonOffset for traces to prevent Z-fighting with pads
+    // Disabled: Handled via physical offset in geometry
+    polygonOffset: false,
+    polygonOffsetFactor: 0,
+    polygonOffsetUnits: 0
   });
 };

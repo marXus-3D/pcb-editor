@@ -9,10 +9,21 @@ const INITIAL_BOARD: BoardConfig = {
 };
 
 const INITIAL_COMPONENTS: PCBComponent[] = [
-  { id: 'pad_1', type: 'smd_rect', pos: [10, 0, 5], size: [2, 4], layer: 'top' },
-  { id: 'pad_2', type: 'smd_round', pos: [-10, 0, 5], size: [1.5, 1.5], layer: 'top' },
-  { id: 'hole_1', type: 'hole', pos: [0, 0], radius: 0.5, layer: 'top' }, // Layer for hole doesn't matter much visually but needed for interface
-  { id: 'trace_1', type: 'trace', points: [[-5, -5], [5, -5], [5, 5]], width: 0.5, layer: 'top' }
+  // Pads
+  { id: 'pad_1', type: 'smd_rect', pos: [10, 0, 5], size: [3, 5], layer: 'top' },
+  { id: 'pad_2', type: 'smd_rect', pos: [10, 0, -5], size: [3, 5], layer: 'top' },
+  { id: 'pad_3', type: 'smd_round', pos: [-10, 0, 5], size: [2, 2], layer: 'top' },
+  { id: 'pad_4', type: 'smd_round', pos: [-10, 0, -5], size: [2, 2], layer: 'top' },
+  
+  // Through-holes (larger for visibility)
+  { id: 'hole_1', type: 'hole', pos: [0, 10], radius: 1.5 },
+  { id: 'hole_2', type: 'hole', pos: [0, -10], radius: 1.5 },
+  { id: 'hole_3', type: 'hole', pos: [20, 0], radius: 2 },
+  
+  // Traces (wider for visibility)
+  { id: 'trace_1', type: 'trace', points: [[-10, 5], [0, 5], [0, 10]], width: 1.5, layer: 'top' },
+  { id: 'trace_2', type: 'trace', points: [[10, 5], [20, 5], [20, 15], [30, 15]], width: 1, layer: 'top' },
+  { id: 'trace_3', type: 'trace', points: [[-10, -5], [10, -5]], width: 2, layer: 'top' }
 ];
 
 export const PCBEditor: React.FC = () => {

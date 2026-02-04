@@ -61,23 +61,10 @@ export class PadSystem {
         
         const dummy = new THREE.Object3D();
 
+        const yOffset = layer === 'bottom' ? -0.01 : 0.01;
+
         groupPads.forEach((pad, i) => {
-          dummy.position.set(pad.pos[0], pad.pos[1], pad.pos[2] || 0);
-          
-          // Rotation? pads usually have rotation.
-           // Spec says pos: [10, 0, 5]. 3D coords?
-           // "Clicking a pad selects it and attaches TransformControls for movement along the XZ plane."
-           // So y is up.
-           // But our board is in X-Z plane (y is thickness).
-           // Spec says pos: [10, 0, 5]. Usually x, y, z.
-           // If board is on XZ plane, then Y is up-down.
-           // If pos is [10, 0, 5], that means x=10, y=0, z=5.
-           // If layer system handles Y, then we should ignore pad.pos[1] (Y) or set it to 0 relative to layer?
-           // "Layer Management: Implement a system that renders objects on specific layers ... Ensure no Z-fighting"
-           // If I respect the pad's Y, I might break Z-fighting mitigation.
-           // I should force Y to 0 local to the layer group.
-           
-          dummy.position.set(pad.pos[0], 0, pad.pos[2]); // Force Y to 0
+          dummy.position.set(pad.pos[0], yOffset, pad.pos[2]); // Force Y to offset to sit on top of traces
            
            // Rotation - we need rotation in the data? Schema doesn't show it but usually pads have rotation.
            // Let's assume default 0 for now.

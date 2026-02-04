@@ -6,13 +6,17 @@ export class HoleSystem {
   private renderer: PCBRenderer;
   private mesh: THREE.InstancedMesh | null = null;
   private geometry: THREE.CylinderGeometry;
-  private material: THREE.MeshBasicMaterial;
+  private material: THREE.MeshStandardMaterial;
 
   constructor(renderer: PCBRenderer) {
     this.renderer = renderer;
-    // Simple black cylinder to simulate hole
+    // Cylinder geometry for holes - slightly dark to simulate depth
     this.geometry = new THREE.CylinderGeometry(1, 1, 1, 32);
-    this.material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    this.material = new THREE.MeshStandardMaterial({ 
+      color: 0x111111, // Very dark gray
+      metalness: 0.8,
+      roughness: 0.3
+    });
   }
 
   public update(components: PCBComponent[], boardThickness: number) {
@@ -25,46 +29,21 @@ export class HoleSystem {
     const dummy = new THREE.Object3D();
 
     holes.forEach((hole, i) => {
-      // Position: x, y (2D). Z needs to be center of board?
-      // Board is at y = 0 relative to 'board' layer? No, board layer is at 0.
-      // Board mesh is at y = -thickness/2?
-      // Wait, in PCBRenderer:
-      // this.boardMesh.position.y = -config.thickness / 2; // Top surface at y=0 ??
-      // Actually if BoxGeometry height (thickness) is T.
-      // Center is 0. So ranges from -T/2 to T/2.
-      // If position.y = -T/2.
-      // Then range is [-T, 0].
-      // So Top surface IS at 0.
+      // Position: hole.pos is [x, y] in 2D PCB space.
+      // Map to 3D: X -> X, Y -> Z, and center the hole at Y=0 (middle of board).
+      // The board geometry is centered at Y=0, ranging from -thickness/2 to +thickness/2.
+      // So holes centered at Y=0 will "drill through" the middle of the board.
+      dummy.position.set(hole.pos[0], 0, hole.pos[1]);
       
-      // So holes should be centered at -T/2, with height T.
-      // Actually height T+epsilon.
-      
-      dummy.position.set(hole.pos[0], -boardThickness / 2, hole.pos[1]); // x, z maps to x, z in 3D?
-      // Wait, standard mapping:
-      // PCB X -> 3D X
-      // PCB Y -> 3D Z?
-      // My PadSystem used `dummy.position.set(pad.pos[0], 0, pad.pos[2])`.
-      // Spec: pos: [10, 0, 5]. x=10, y=0, z=5.
-      // So PCB space IS 3D space?
-      // Or is "pos" just an array and Schema says `pos: [10, 0, 5]`.
-      // Usually PCB is 2D. But simple viewer might use 3D coords for everything.
-      // Let's assume input `pos` corresponds to World `x, y, z`.
-      // But for Holes, we usually only have x,y (2D).
-      // `HoleComponent` interface says `pos: [number, number]`.
-      // So x, y.
-      // We map this to 3D X, Z.
-      
-      // Rotation: Cylinder default is along Y axis. Correct.
-      
-      dummy.scale.set(hole.radius, boardThickness * 1.05, hole.radius); // Slightly longer than thickness
+      // Scale: radius for X and Z, board thickness for Y (height of cylinder)
+      dummy.scale.set(hole.radius, boardThickness * 1.1, hole.radius); // Slightly longer than thickness
       dummy.updateMatrix();
       this.mesh!.setMatrixAt(i, dummy.matrix);
     });
 
     this.mesh.instanceMatrix.needsUpdate = true;
     
-    // Add to 'board' layer or 'drills' layer?
-    // 'board' layer is a Group.
+    // Add to 'board' layer
     this.renderer.getLayerGroup('board').add(this.mesh);
   }
 

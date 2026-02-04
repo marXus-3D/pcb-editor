@@ -161,10 +161,10 @@ export class PCBRenderer {
     
     // Position Layer Groups
     // Top layer is slightly above the board surface
-    this.layers['top'].position.y = config.thickness / 2 + 0.005;
+    this.layers['top'].position.y = config.thickness / 2 + 0.01;
     
     // Bottom layer is slightly below the board surface
-    this.layers['bottom'].position.y = -config.thickness / 2 - 0.005;
+    this.layers['bottom'].position.y = -config.thickness / 2 - 0.01;
     // We might want to rotate bottom components or just handle it in the component logic.
     // Usually bottom components are mirrored in X if looking from top, or just placed on bottom.
     // Let's just place them.
