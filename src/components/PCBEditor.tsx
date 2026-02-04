@@ -131,7 +131,7 @@ export const PCBEditor: React.FC = () => {
     
     renderer.onSelectionChange = (data) => setSelectedData(data);
     
-    renderer.onBoardClick = (point) => {
+    renderer.onBoardClick = (_point) => {
         // Use a ref for current tool state if closure is stale, 
         // OR rely on state update function if we can.
         // But onBoardClick is bound once. 
