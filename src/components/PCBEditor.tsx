@@ -8,23 +8,109 @@ const INITIAL_BOARD: BoardConfig = {
   thickness: 1.6
 };
 
-const INITIAL_COMPONENTS: PCBComponent[] = [
-  // Pads
-  { id: 'pad_1', type: 'smd_rect', pos: [10, 0, 5], size: [3, 5], layer: 'top' },
-  { id: 'pad_2', type: 'smd_rect', pos: [10, 0, -5], size: [3, 5], layer: 'top' },
-  { id: 'pad_3', type: 'smd_round', pos: [-10, 0, 5], size: [2, 2], layer: 'top' },
-  { id: 'pad_4', type: 'smd_round', pos: [-10, 0, -5], size: [2, 2], layer: 'top' },
+const generateDemoPCB = (): PCBComponent[] => {
+  const components: PCBComponent[] = [];
+  let idCounter = 0;
+  const nextId = () => `cmp_${idCounter++}`;
+
+  // 1. MCU - QFP-32 (Center)
+  const mcuX = 0;
+  const mcuZ = 0;
+  const mcuPitch = 1.0;
+  const mcuOffset = 6; 
+
+  for (let i = 0; i < 8; i++) {
+    const offset = (i - 3.5) * mcuPitch;
+    // Top Row
+    components.push({ id: nextId(), type: 'smd_rect', pos: [mcuX + offset, 0, mcuZ - mcuOffset], size: [0.6, 1.5], layer: 'top' });
+    // Bottom Row
+    components.push({ id: nextId(), type: 'smd_rect', pos: [mcuX + offset, 0, mcuZ + mcuOffset], size: [0.6, 1.5], layer: 'top' });
+    // Left Row
+    components.push({ id: nextId(), type: 'smd_rect', pos: [mcuX - mcuOffset, 0, mcuZ + offset], size: [1.5, 0.6], layer: 'top' });
+    // Right Row
+    components.push({ id: nextId(), type: 'smd_rect', pos: [mcuX + mcuOffset, 0, mcuZ + offset], size: [1.5, 0.6], layer: 'top' });
+  }
+
+  // 2. Memory - SOP-16 (Right side)
+  const memX = 25;
+  const memZ = 0;
+  const memOffset = 4;
+  for(let i=0; i<8; i++) {
+      const offset = (i - 3.5) * 1.27;
+      components.push({ id: nextId(), type: 'smd_rect', pos: [memX - memOffset, 0, memZ + offset], size: [1.5, 0.6], layer: 'top' });
+      components.push({ id: nextId(), type: 'smd_rect', pos: [memX + memOffset, 0, memZ + offset], size: [1.5, 0.6], layer: 'top' });
+  }
   
-  // Through-holes (larger for visibility)
-  { id: 'hole_1', type: 'hole', pos: [0, 10], radius: 1.5 },
-  { id: 'hole_2', type: 'hole', pos: [0, -10], radius: 1.5 },
-  { id: 'hole_3', type: 'hole', pos: [20, 0], radius: 2 },
+  // 3. Power Regulator (Top Left)
+  const pwrX = -30;
+  const pwrZ = -15;
+  components.push({ id: nextId(), type: 'smd_rect', pos: [pwrX, 0, pwrZ], size: [4, 6], layer: 'top' }); // Tab
+  components.push({ id: nextId(), type: 'smd_rect', pos: [pwrX - 3, 0, pwrZ + 5], size: [1.5, 2], layer: 'top' }); // Pin 1
+  components.push({ id: nextId(), type: 'smd_rect', pos: [pwrX + 3, 0, pwrZ + 5], size: [1.5, 2], layer: 'top' }); // Pin 3
+
+  // 4. Connector - Bottom Edge
+  for(let i=0; i<20; i++) {
+      const x = -38 + i * 4;
+      components.push({ id: nextId(), type: 'hole', pos: [x, 30], radius: 0.8 });
+      components.push({ id: nextId(), type: 'smd_round', pos: [x, 0, 30], size: [2.2, 2.2], layer: 'top' });
+      components.push({ id: nextId(), type: 'smd_round', pos: [x, 0, 30], size: [2.2, 2.2], layer: 'bottom' });
+  }
+
+  // 5. Decoupling Caps (Around MCU)
+  for(let i=0; i<16; i++) {
+      const angle = (i / 16) * Math.PI * 2;
+      const radius = 9;
+      // Skip areas where traces need to go out (Right side)
+      if (Math.abs(angle) < 0.5) continue; 
+      
+      const cx = Math.cos(angle) * radius;
+      const cz = Math.sin(angle) * radius;
+      
+      const dx = Math.cos(angle) * 1.0; // spacing delta
+      const dz = Math.sin(angle) * 1.0;
+      
+      // 2 Pads per cap
+      components.push({ id: nextId(), type: 'smd_rect', pos: [cx - dx, 0, cz - dz], size: [0.8, 1.2], layer: 'top' });
+      components.push({ id: nextId(), type: 'smd_rect', pos: [cx + dx, 0, cz + dz], size: [0.8, 1.2], layer: 'top' });
+  }
+
+  // 6. Traces
+  // Bus: MCU Right -> Memory Left
+  for(let i=0; i<8; i++) {
+     const startZ = (i - 3.5) * mcuPitch;
+     const endZ = (i - 3.5) * 1.27;
+     const p1: [number, number] = [mcuOffset, startZ];
+     const p2: [number, number] = [mcuOffset + 3 + Math.abs(startZ)*0.5, startZ]; // Fanout slightly
+     const p3: [number, number] = [memX - memOffset - 3 - Math.abs(endZ)*0.5, endZ];
+     const p4: [number, number] = [memX - memOffset, endZ];
+     
+     components.push({ id: nextId(), type: 'trace', points: [p1, p2, p3, p4], width: 0.25, layer: 'top' });
+  }
   
-  // Traces (wider for visibility)
-  { id: 'trace_1', type: 'trace', points: [[-10, 5], [0, 5], [0, 10]], width: 1.5, layer: 'top' },
-  { id: 'trace_2', type: 'trace', points: [[10, 5], [20, 5], [20, 15], [30, 15]], width: 1, layer: 'top' },
-  { id: 'trace_3', type: 'trace', points: [[-10, -5], [10, -5]], width: 2, layer: 'top' }
-];
+  // Power Fanout
+  components.push({ id: nextId(), type: 'trace', points: [[pwrX, pwrZ+3], [pwrX, 0], [mcuX - mcuOffset, 0]], width: 1.0, layer: 'top' });
+  
+  // Connector Fanout (to MCU Bottom)
+  for(let i=0; i<8; i++) {
+      const padX = (i - 3.5) * mcuPitch;
+      const connX = -4 + i * 2; // Arbitrary pins on connector
+      
+      components.push({ id: nextId(), type: 'trace', points: [[padX, mcuOffset], [padX, mcuOffset + 5], [connX, 25], [connX, 30]], width: 0.3, layer: 'top' });
+  }
+  
+  // Perimeter Ground Ring
+  components.push({ id: nextId(), type: 'trace', points: [[-45, -35], [45, -35], [45, 35], [-45, 35], [-45, -35]], width: 0.5, layer: 'bottom' });
+  
+  // Mounting Holes
+  components.push({ id: nextId(), type: 'hole', pos: [-45, -35], radius: 1.6 });
+  components.push({ id: nextId(), type: 'hole', pos: [45, -35], radius: 1.6 });
+  components.push({ id: nextId(), type: 'hole', pos: [45, 35], radius: 1.6 });
+  components.push({ id: nextId(), type: 'hole', pos: [-45, 35], radius: 1.6 });
+
+  return components;
+};
+
+const INITIAL_COMPONENTS: PCBComponent[] = generateDemoPCB();
 
 export const PCBEditor: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
