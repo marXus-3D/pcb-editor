@@ -213,33 +213,24 @@ export class PCBRenderer {
     // Update the object/instance
     const { object, instanceId } = this.selectedObject;
     
+    const pos = new THREE.Vector3();
+    const targetObj = this.transformControls.object;
+    targetObj.updateMatrix();
+    targetObj.matrix.decompose(pos, new THREE.Quaternion(), new THREE.Vector3());
+
     if (object instanceof THREE.InstancedMesh && typeof instanceId === 'number') {
       const mesh = object as THREE.InstancedMesh;
-      mesh.setMatrixAt(instanceId, this.dummyHelper.matrix);
+      mesh.setMatrixAt(instanceId, targetObj.matrix);
       mesh.instanceMatrix.needsUpdate = true;
-      
-      
-      // Update data sidebar
-      // Extract position
-      const pos = new THREE.Vector3();
-      this.dummyHelper.matrix.decompose(pos, new THREE.Quaternion(), new THREE.Vector3());
       
       // Update internal component state
       if (object.userData.componentIds) {
         const id = object.userData.componentIds[instanceId];
         const component = this.components.find(c => c.id === id);
-        if (component && 'pos' in component) { // PadComponent or HoleComponent
-             // pos is [x, y, z] or [x, y].
-             // Helper pos is world pos.
-             // We assumed pad.pos maps to World X, Z (with Y handled by layer or pad.pos[1]).
-             // If we keep strictly to X,Z plane movement:
-             // component.pos[0] = pos.x
-             // component.pos[2] = pos.z
+        if (component && 'pos' in component) {
              if (component.type === 'smd_rect' || component.type === 'smd_round') {
-                 // PadComponent pos is [number, number, number]
                  component.pos[0] = pos.x;
                  component.pos[2] = pos.z;
-                 // Maintain Y or set to pos.y if we allowed Y movement (we disabled it)
              }
         }
       }
@@ -255,8 +246,18 @@ export class PCBRenderer {
           size: (component as any)?.size
         });
       }
+    } else if (object instanceof THREE.Mesh) {
+      // Regular mesh (like a Trace)
+      // If we are moving a trace, we should update its internal points? 
+      // That's more complex. For now just update visual position and metadata.
+      if (this.onSelectionChange) {
+        this.onSelectionChange({
+          id: object.userData.id,
+          pos: [pos.x, pos.y, pos.z],
+          type: object.userData.type
+        });
+      }
     }
-    // Traces?
   }
 
   private onPointerMove(event: PointerEvent) {
@@ -268,6 +269,9 @@ export class PCBRenderer {
   }
   
   private onPointerDown(_event: PointerEvent) {
+    // If clicking on TransformControls gizmo, ignore
+    if ((this.transformControls as any).axis) return;
+
     if (this.hoveredObject) {
       this.selectObject(this.hoveredObject);
     } else {
@@ -343,11 +347,17 @@ export class PCBRenderer {
     this.transformControls.detach();
     
     if (object instanceof THREE.InstancedMesh && typeof instanceId === 'number') {
-       // Position dummy at instance matrix
+       // Position dummy at instance matrix relative to its parent
        const matrix = new THREE.Matrix4();
        object.getMatrixAt(instanceId, matrix);
+       
+       // Add dummy to same parent to keep coordinate spaces aligned
+       if (object.parent) {
+         object.parent.add(this.dummyHelper);
+       }
+       
        matrix.decompose(this.dummyHelper.position, this.dummyHelper.quaternion, this.dummyHelper.scale);
-       this.dummyHelper.updateMatrix(); // update world matrix
+       this.dummyHelper.updateMatrix();
        
        this.transformControls.attach(this.dummyHelper);
     } else {
