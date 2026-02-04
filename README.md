@@ -11,6 +11,23 @@ A high-performance 3D PCB Viewer & Editor built with React and Vanilla Three.js.
 - **Interaction**: Raycasting for picking, hover effects, and TransformControls for movement.
 - **Persistence**: Save and Load PCB layouts via JSON.
 
+## Project Structure
+
+```
+src/
+├── components/         # React components (UI, Canvas wrapper)
+│   └── PCBEditor.tsx   # Main editor component
+├── engine/             # Core 3D Engine (Three.js)
+│   ├── primitives/     # Sub-systems for rendering board elements
+│   │   ├── PadSystem.ts
+│   │   ├── TraceSystem.ts
+│   │   └── HoleSystem.ts
+│   └── PCBRenderer.ts  # Main Renderer class
+├── shaders/            # Custom GLSL Shaders
+│   └── CopperMaterial.ts
+└── types/              # TypeScript definitions
+```
+
 ## Technical Implementation
 
 ### Performance Strategy (`InstancedMesh`)
